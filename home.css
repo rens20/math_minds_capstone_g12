@@ -1,0 +1,172 @@
+/* General styles */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+  background: #451952;
+  min-height: 1800px;
+  overflow-x: hidden;
+}
+
+/* Section styles */
+section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+}
+
+section img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+#text {
+  position: relative;
+  color: #000000;
+  font-size: 8em;
+  z-index: 1;
+  text-align: center;
+}
+
+header {
+  color: transparent;
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10000;
+  background: #451952;
+}
+
+.logo {
+  font-size: 15px;
+  font-weight: bold;
+  color: #451952;
+  transition: color 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 200px;
+  height: 80px;
+  margin: 0 20px;
+  text-align: center;
+}
+
+.logo:hover {
+  color: #ddd;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  position: relative;
+  z-index: 1;
+  justify-content: space-between;
+}
+
+nav li {
+  margin-right: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+nav a {
+  color: #451952;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+nav a:hover {
+  color: #ddd;
+}
+
+/* Sign In and Sign Up Button Styles */
+.sign-in-btn,.cta {
+  background-color: #fff;
+  color: #451952;
+  padding: 14px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.sign-in-btn:hover,.cta:hover {
+  background-color: #451952;
+  color: #fff;
+  box-shadow: 0 0 10px #fff;
+  transform: scale(1.05);
+}
+
+/* About Us button styles */
+.about-us-btn {
+  background-color: #451952;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.about-us-btn:hover {
+  background-color: #451952;
+  color: #fff;
+  box-shadow: 0 0 10px #451952;
+  transform: scale(1.05);
+}
+
+/* About Us section styles */
+#about {
+  padding: 50px;
+  background-color: #ffffff;
+  text-align: center;
+  margin-top: 50px;
+  margin-left: 50px;
+  max-width: 500px;
+  left: 100px;
+  position: absolute;
+  top: 170vh;
+  transform: translateY(-50%);
+  border-radius: 10%;
+}
+
+#about h2 {
+  font-size: 3rem;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: #451952;
+}
+
+#about p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  text-align: justify;
+  color: #666;
+}
+

@@ -1,0 +1,126 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #451952, #e8bcb9);
+}
+
+header {
+  background: linear-gradient(to right, #451952, #e8bcb9);
+  color: #e67e22;
+  padding: 45px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  margin: 50px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.container h2 {
+  margin-top: 0;
+  color: #451952;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.form-group i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #777;
+  font-size: 16px;
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.form-group input {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 16px;
+  outline: none;
+  padding-left: 30px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus + i,.form-group input:valid + i {
+  color: #451952; 
+}
+
+.form-group input:focus {
+  border-color: #451952; 
+}
+
+/* Label styles */
+.label {
+  color: #451952; 
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.btn {
+  width: 150px;
+  background-color: #451952; 
+  color: #fff;
+  padding: 0.5em 1em;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  background-color: #fff;
+  color: #451952;
+  box-shadow: 0 0 10px #451952;
+  transform: scale(1.05);
+}
+
+.container p {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.container p a {
+  color: #451952;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.container p a:hover {
+  color: #451952;
+}
+
+.grow {
+  animation: grow 0.5s ease-out;
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}

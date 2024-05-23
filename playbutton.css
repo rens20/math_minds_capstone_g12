@@ -1,0 +1,97 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient( #451952, #e8bcb9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Container Styles */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  width: 500px;
+  border-radius: 50%;
+  background: linear-gradient(to right, #1d1a39, #ae445a);
+  box-shadow: 0 0 20px #1d1a39;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Play Button Styles */
+.image-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  font-size: 3rem;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px #662549;
+  background-image: url('playbutton.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.image-btn:hover {
+  transform: scale(1.1);
+  color: #662549;
+  animation: pulse 0.5s ease-in-out;
+}
+
+.image-btn:hover .play-text {
+  opacity: 1;
+}
+
+/* Add some animation to the play button */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {transform: scale(1.1);
+  }
+}
+
+/* Home Button Styles */
+.home-btn {
+  padding: 14px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1;
+  background: #662549;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.home-btn:hover {
+  background-color: #fff;
+  color: #662549;
+  box-shadow: 0 0 10px #662549;
+  transform: scale(1.05);
+}
