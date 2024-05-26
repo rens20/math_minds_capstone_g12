@@ -1,268 +1,260 @@
+<?php
+require_once __DIR__ . '../config/configuration.php'; 
+require_once __DIR__ . '../config/validation.php';
+
+session_start();
+
+// Initialize or reset quiz session
+if (!isset($_SESSION['current_question'])) {
+    $_SESSION['current_question'] = 0;
+    $_SESSION['correct_answers'] = 0;
+    $_SESSION['user_answers'] = [];
+}
+
+// Retrieve questions from the database
+$sql = "SELECT id, question, answer_a, answer_b, answer_c, answer_d, correct_answer FROM hard_questions LIMIT 10";
+$result = $conn->query($sql);
+
+$questions = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $questions[] = $row;
+    }
+}
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['undo'])) {
+        // Undo the last answer
+        $_SESSION['current_question']--;
+        unset($_SESSION['user_answers'][$_SESSION['current_question']]);
+        header('Location: medium.php');
+        exit;
+    } else {
+        $selected_answer = $_POST['answer'];
+        $current_question_index = $_SESSION['current_question'];
+
+        // Store the user's answer
+        $_SESSION['user_answers'][$current_question_index] = $selected_answer;
+
+        // Check if the answer is correct
+        if ($selected_answer == $questions[$current_question_index]['correct_answer']) {
+            $_SESSION['correct_answers']++;
+        }
+
+        // Move to the next question
+        $_SESSION['current_question']++;
+
+        // Check if the quiz is complete
+        if ($_SESSION['current_question'] >= count($questions)) {
+            header('Location: quiz_result1.php');
+            exit;
+        }
+    }
+}
+
+// Get the current question
+$current_question = $questions[$_SESSION['current_question']];
+$current_question_number = $_SESSION['current_question'] + 1;
+$total_questions = count($questions);
+?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Mathster's Challenge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="medium.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #6d28d9;
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            background-color: #e5e7eb;
+            border-radius: 5px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: #6d28d9;
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin-bottom: 10px;
+        }
+
+        .options input[type="radio"] {
+            display: none;
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            background-color: #e5e7eb;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .options input[type="radio"]:checked + label {
+            background-color: #6d28d9;
+            color: white;
+        }
+
+        .options label::before {
+            content: attr(data-label);
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border: 2px solid #6d28d9;
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .options input[type="radio"]:checked + label::before {
+            background-color: white;
+            color: #6d28d9;
+            content: '✔';
+            font-size: 14px;
+        }
+
+        .options label.correct {
+            background-color: #34d399 !important;
+            color: white !important;
+        }
+
+        .options label.correct::before {
+            background-color: white !important;
+            color: #34d399 !important;
+            content: '✔' !important;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button {
+            background-color: #6d28d9;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #5b21b6;
+        }
+
+        .button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <header>
-        <div class="container">
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="gamepage.php" class="back-btn">Back</a></li>
-                    <li><a href="help.php" class="cta">Help</a></li>
-                    <li><a href="home.php" class="cta">Home</a></li>
-                </ul>
-            </nav>
+    <div class="container">
+        <div class="header">
+            Quiz Question
+            <button class="button" id="help-button">Help</button>
         </div>
-    </header>
-    <main>
-        <div class="quiz">
-            <div id="question-container">
-                <div id="progress-bar">
-                    <div id="progress"></div>
-                </div>
-                <div id="question"></div>
-                <div id="answers"></div>
-                <button type="button" id="submit-btn" disabled>Next</button>
-            </div>
-            <div id="results-container" style="display:none;">
-                <h2>Results:</h2>
-                <p id="results"></p>
-                <button id="result-btn" style="display:none;">Try Again</button>
-                <button class="done-btn" id="done-btn" style="display:none;">Done</button>
-            </div>
+        <div class="progress-container">
+            <div class="progress-bar" style="width: <?php echo ($current_question_number / $total_questions) * 100; ?>%;"></div>
         </div>
-    </main>
+        <form action="" method="POST">
+            <div class="question"><?php echo $current_question['question']; ?></div>
+            <ul class="options">
+                <?php foreach (['a', 'b', 'c', 'd'] as $option): ?>
+                    <li>
+                        <input type="radio" id="answer_<?php echo $option; ?>" name="answer" value="<?php echo strtoupper($option); ?>">
+                        <label for="answer_<?php echo $option; ?>" data-label="<?php echo strtoupper($option); ?>">
+                            <?php echo $current_question['answer_' . $option]; ?>
+                        </label>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <div class="buttons">
+                <?php if ($current_question_number > 1): ?>
+                    <button type="submit" name="undo" class="button">Undo</button>
+                <?php else: ?>
+                    <div></div>
+                <?php endif; ?>
+                <button type="submit" class="button">Next</button>
+            </div>
+        </form>
+    </div>
 
     <script>
-        // Generate questions and answers
-        const questions = [
-  {
-    question: "What is the value of 3^4?",
-    answers: ["81", "64", "100", "121"],
-    correct: "81"
-  },
-  {
-    question: "What is the value of 25% of 240?",
-    answers: ["60", "50", "40", "30"],
-    correct: "60"
-  },
-  {
-    question: "What is the value of 23 - 11 + 5?",
-    answers: ["17", "16", "18", "19"],
-    correct: "17"
-  },
-  {
-    question: "What is the value of 7 × 9 - 3?",
-    answers: ["60", "63", "58", "61"],
-    correct: "60"
-  },
-  {
-    question: "What is the value of 48 ÷ 6 + 2?",
-    answers: ["10", "12", "11", "9"],
-    correct: "10"
-  },
-  {
-    question: "What is the value of 11 × 11 - 20?",
-    answers: ["101", "91", "111", "121"],
-    correct: "101"
-  },
-  {
-    question: "What is the value of 36 - 15 + 9?",
-    answers: ["30", "29", "31", "28"],
-    correct: "30"
-  },
-  {
-    question: "What is the value of 50% of 360?",
-    answers: ["180", "160", "200", "190"],
-    correct: "180"
-  },
-  {
-    question: "What is the value of 9 × 8 + 12?",
-    answers: ["96", "92", "90", "100"],
-    correct: "96"
-  },
-  {
-    question: "What is the value of 72 ÷ 9 - 2?",
-    answers: ["6", "5", "7", "4"],
-    correct: "6"
-  }
-]
+        document.getElementById('help-button').addEventListener('click', function() {
+            const  correctAnswer = "<?php echo $current_question['correct_answer']; ?>";
+            const options = document.querySelectorAll('.options label');
 
-        // Global variables
-        let questionIndex = 0;
-        let progress = 0;
-        let score = 0;
-        let selectedOption = null;
-
-        // Function to start quiz
-        function startQuiz() {
-            // Show first question
-            const questionContainer = document.getElementById("question");
-            questionContainer.textContent = questions[questionIndex].question;
-
-            // Generate answer options
-            const answers = questions[questionIndex].answers;
-            const answersContainer = document.getElementById("answers");
-            answersContainer.innerHTML = "";
-            for (let i = 0; i < answers.length; i++) {
-                const answer = document.createElement("button");
-                answer.classList.add("answer");
-                answer.textContent = answers[i];
-                answer.addEventListener("click", selectAnswer);
-                answersContainer.appendChild(answer);
-            }
-
-            // Reset submit button
-            document.getElementById("submit-btn").disabled = true;
-        }
-
-        // Function to select answer
-        function selectAnswer(e) {
-            const answerContainer = document.getElementsByClassName("answer");
-            for (let i = 0; i < answerContainer.length; i++) {
-                answerContainer[i].disabled = true;
-            }
-
-            selectedOption = e.target;
-            selectedOption.classList.add("selected");
-            document.getElementById("submit-btn").disabled = false;
-        }
-
-        // Function to submit answer
-        function submitAnswer() {
-            // Remove event listener from answer options
-            const answers = document.getElementsByClassName("answer");
-            for (let i = 0; i < answers.length; i++) {
-                answers[i].removeEventListener("click", selectAnswer);
-            }
-
-            // Check if correct answer
-            if (selectedOption.textContent === questions[questionIndex].correct) {
-                selectedOption.classList.add("correct-answer");
-                score++;
-            } else {
-                selectedOption.classList.add("incorrect-answer");
-            }
-
-            // Move to next question or show results
-            questionIndex++;
-            progress = Math.floor((questionIndex / questions.length) * 100);
-            document.getElementById("progress").style.width = progress + "%";
-
-            if (questionIndex < questions.length) {
-                const questionContainer = document.getElementById("question");
-                questionContainer.textContent = questions[questionIndex].question;
-
-                // Generate answer options
-                const answers = questions[questionIndex].answers;
-                const answersContainer = document.getElementById("answers");
-                answersContainer.innerHTML = "";
-                for (let i = 0; i < answers.length; i++) {
-                    const answer = document.createElement("button");
-                    answer.classList.add("answer");
-                    answer.textContent = answers[i];
-                    answer.addEventListener("click", selectAnswer);
-                    answersContainer.appendChild(answer);
+            options.forEach(function(option) {
+                if (option.getAttribute('for').endsWith(correctAnswer.toLowerCase())) {
+                    option.classList.add('correct');
                 }
-
-                document.getElementById("submit-btn").disabled = false;
-            } else {
-                showResults();
-            }
-        }
-
-        // Function to show results
-        function showResults() {
-            document.getElementById("results-container").style.display = "block";
-            document.getElementById("question-container").style.display = "none";
-            document.getElementById("results").textContent = `Your score is ${score} out of ${questions.length}.`;
-
-            // Add color to correct and incorrect answers
-            const correctAnswers = document.getElementsByClassName("correct-answer");
-            for (let i = 0; i < correctAnswers.length; i++) {
-                correctAnswers[i].style.backgroundColor = "green";
-            }
-
-            const incorrectAnswers = document.getElementsByClassName("incorrect-answer");
-            for (let i = 0; i < incorrectAnswers.length; i++) {
-                incorrectAnswers[i].style.backgroundColor = "red";
-            }
-
-            // Show try again and done buttons
-            document.getElementById("result-btn").style.display = "block";
-            document.getElementById("done-btn").style.display = "block";
-        }
-
-        // Function to try again
-        function tryAgain() {
-    // Reset global variables
-    questionIndex = 0;
-    progress = 0;
-    score = 0;
-    selectedOption = null;
-
-    // Shuffle questions
-    questions.sort(() => Math.random() - 0.5);
-
-    // Reset question container
-    document.getElementById("question-container").style.display = "block";
-    document.getElementById("results-container").style.display = "none";
-
-    // Reset submit button
-    document.getElementById("submit-btn").disabled = true;
-
-    // Reset answers
-    const answers = document.getElementsByClassName("answer");
-    for (let i = 0; i < answers.length; i++) {
-        answers[i].disabled = false;
-        answers[i].classList.remove("selected", "correct-answer", "incorrect-answer");
-    }
-
-    // Reset question and answers
-    const questionContainer = document.getElementById("question");
-    questionContainer.textContent = questions[questionIndex].question;
-
-    const answersContainer = document.getElementById("answers");
-    answersContainer.innerHTML = "";
-
-    // Start quiz again
-    for (let i = 0; i < questions[questionIndex].answers.length; i++) {
-        const answer = document.createElement("button");
-        answer.classList.add("answer");
-        answer.textContent = questions[questionIndex].answers[i];
-
-        // Add event listener for answer buttons
-        answer.addEventListener("click", function (event) {
-            selectAnswer(event);
-            submitAnswer();
+            });
         });
-
-        answersContainer.appendChild(answer);
-    }
-
-    document.getElementById("submit-btn").disabled = false;
-}
-        // Event listeners
-        document.getElementById("submit-btn").addEventListener("click", submitAnswer);
-        document.getElementById("result-btn").addEventListener("click", tryAgain);
-        document.getElementById("done-btn").addEventListener("click", () => {
-            window.location.href = "home.php";
-        });
-
-        function goBack() {
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                window.location.href = "gamepage.php";
-            }
-        }
-
-        // Start quiz
-        startQuiz();
     </script>
 </body>
+
 </html>

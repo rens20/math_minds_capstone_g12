@@ -1,3 +1,37 @@
+<?php
+session_start();
+
+require_once __DIR__ . '../config/configuration.php';
+require_once __DIR__ . '../config/validation.php';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = $_POST['Email']; 
+    $password = $_POST['Password']; 
+
+    // Validate login credentials
+    $user = ValidateLogin($email, $password);
+
+    if (empty($user)) {
+        echo '<script>alert("Login failed!");</script>';
+    } else {
+        // Set session token based on user type
+        switch ($user['type']) {
+            case 'admin':
+                $_SESSION['token'] = 'admin';
+                header("Location: ./admin_easy.php?id=" . urlencode($user['id']));
+                exit();
+            case 'user':
+                $_SESSION['token'] = 'user';
+                $_SESSION['username'] = $user['name']; // Changed from $name to $user['name']
+                header("Location: ./gamepage.php?id=" . urlencode($user['id']) . "&name=" . urlencode($user['name']));
+                exit();
+            default:
+                echo "Invalid user type";
+        }
+    }
+}
+?>
+
 
 <!DOCTYPE html>
 <html>
@@ -16,58 +50,19 @@
   </header>
   <div class="container">
     <h2>Sign In</h2>
-    <form action="playbutton.php" method="post" action="signup.php">
+    <form action="" method="post">
       <div class="form-group">
         <i class="fas fa-envelope"></i>
-        <input type="Email" name="Email" placeholder="Email" required />
+        <input type="email" name="Email" placeholder="Email" required />
       </div>
       <div class="form-group">
         <i class="fas fa-lock"></i>
-        <input type="Password" name="Password" placeholder="Password" required />
+        <input type="password" name="Password" placeholder="Password" required />
       </div>
       <button type="submit" class="btn">Continue</button>
     </form>
     <p>Already have an account? <a href="signup.php" id="signin-link">Sign Up</a></p>
   </div>
-  <script>
 
-const signinBtn = document.getElementById('signin-btn');
-
-signinBtn.addEventListener('click', () => {
-  const container = signinBtn.parentNode.parentNode;
-  const formGroups = container.querySelectorAll('.form-group');
-  formGroups.forEach((formGroup) => {
-    if (formGroup.firstElementChild.name === 'username') {
-      formGroup.classList.add('shrink');
-    } else {
-      formGroup.classList.remove('shrink');
-      formGroup.classList.add('grow');
-    }
-  });
-  container.classList.add('shrink');
-  setTimeout(() => {
-    window.location.href = 'signin.php'; /* redirect to sign in page */
-  }, 500); /* wait for 500ms for the transition effect */
-});
-
-// add event listener to the container to remove the shrink effect when the transition is complete
-document.addEventListener('DOMContentLoaded', () => {
-  const containers = document.querySelectorAll('.container');
-  containers.forEach((container) => {
-    container.addEventListener('transitionend', () => {
-      container.classList.remove('shrink');
-      container.classList.add('show');
-      const formGroups = container.querySelectorAll('.form-group');
-      formGroups.forEach((formGroup) => {
-        formGroup.classList.remove('shrink');
-        formGroup.classList.add('grow');
-      });
-    });
-  });
-});
-
-  </script>
 </body>
 </html>
-
-

@@ -9,42 +9,23 @@ function ValidateLogin($email, $password) {
     $email = mysqli_real_escape_string($conn, $email);
     $password = mysqli_real_escape_string($conn, $password);
 
-    $sql = "SELECT * FROM users_admin WHERE email = '$email'";
+    $sql = "SELECT * FROM user_admin WHERE email = '$email'";
     $result = mysqli_query($conn, $sql);
 
     if (mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
-        if ($password === $user['password']) { // Direct comparison of plain text passwords
-            // Login successful
-            // Start a session and set session variables as needed
-            session_start();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['type'];
-
-            // Generate a unique token
-            $token = bin2hex(random_bytes(16));
-            $_SESSION['token'] = $token;
-
-            // Redirect based on user role
-            if ($user['type'] === 'admin') {
-                header("Location: ../public/admin.php");
-            } else {
-                header("Location: ../public/home.php");
-            }
-            exit();
+        if ($password === $user['password']) { 
+            return $user; 
         } else {
-            // Password is incorrect
-            return "Invalid password.";
+            return null; 
         }
     } else {
-        // Email not found
-        return "No user found with that email.";
+        return null; 
     }
 
-    // Close connection
     mysqli_close($conn);
 }
+
 
 function Register($email, $name, $last, $password, $username) {
     $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -64,10 +45,13 @@ function Register($email, $name, $last, $password, $username) {
     
     if (mysqli_query($conn, $insert)) {
         $report = 'Registration Complete!';
+          header('location: ../gamepage.php');
+    exit();
+    
     } else {
         $report = 'Error: ' . $insert . '<br>' . mysqli_error($conn);
     }
-
+  
     // Close connection
     mysqli_close($conn);
     return $report;

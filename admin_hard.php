@@ -1,0 +1,230 @@
+<?php
+session_start();
+require_once __DIR__ . '../config/configuration.php';
+require_once __DIR__ . '../config/validation.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve form data
+    $question = $_POST['question'];
+    $answerA = $_POST['answer_a'];
+    $answerB = $_POST['answer_b'];
+    $answerC = $_POST['answer_c'];
+    $answerD = $_POST['answer_d'];
+    $correctAnswer = $_POST['correct_answer'];
+
+    // Insert data into the database
+    $sql = "INSERT INTO hard_questions (question, answer_a, answer_b, answer_c, answer_d, correct_answer)
+            VALUES ('$question', '$answerA', '$answerB', '$answerC', '$answerD', '$correctAnswer')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo '<div class="notification success">Question added successfully.</div>';
+    } else {
+        echo '<div class="notification error">Error: ' . $sql . '<br>' . $conn->error . '</div>';
+    }
+}
+
+// Retrieve all questions from the database
+$sql = "SELECT * FROM easy_questions";
+$result = $conn->query($sql);
+
+$questions = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $questions[] = $row;
+    }
+}
+
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Quiz Question</title>
+    <style>
+   body {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            font-family: Arial, sans-serif;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        h1, h2 {
+            color: #5a67d8;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #5a67d8;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #434190;
+        }
+
+        .notification {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .notification.success {
+            background-color: #c6f6d5;
+            color: #22543d;
+            display: block;
+        }
+
+        .notification.error {
+            background-color: #fed7d7;
+            color: #742a2a;
+            display: block;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #f3f4f6;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        a {
+            color: #5a67d8;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+          <header>
+            <h1>Admin Page</h1>
+        </header>
+
+        <div>
+            <a href="admin_easy.php"><button>Easy Questions</button></a>
+            <a href="admin_medium.php"><button>Medium Questions</button></a>
+            <a href="admin_hard.php"><button>Hard Questions</button></a>
+        </div>
+        <h1>Add Quiz Question</h1>
+        <form action="" method="POST">
+            <div class="mb-4">
+                <label for="question">Question:</label>
+                <input type="text" id="question" name="question">
+            </div>
+
+            <div class="mb-4">
+                <label for="answer_a">Answer A:</label>
+                <input type="text" id="answer_a" name="answer_a">
+            </div>
+            <div class="mb-4">
+                <label for="answer_b">Answer B:</label>
+                <input type="text" id="answer_b" name="answer_b">
+            </div>
+            <div class="mb-4">
+                <label for="answer_c">Answer C:</label>
+                <input type="text" id="answer_c" name="answer_c">
+            </div>
+            <div class="mb-4">
+                <label for="answer_d">Answer D:</label>
+                <input type="text" id="answer_d" name="answer_d">
+            </div>
+
+            <div class="mb-4">
+                <label for="correct_answer">Correct Answer:</label>
+                <select id="correct_answer" name="correct_answer">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div class="container">
+    <h2>Existing Questions</h2>
+    <?php if (count($questions) > 0): ?>
+        <ul>
+            <?php foreach ($questions as $question): ?>
+                <li>
+                    <div class="font-semibold"><?php echo htmlspecialchars($question['question']); ?></div>
+                    <div>Answer A: <?php echo htmlspecialchars($question['answer_a']); ?></div>
+                    <div>Answer B: <?php echo htmlspecialchars($question['answer_b']); ?></div>
+                    <div>Answer C: <?php echo htmlspecialchars($question['answer_c']); ?></div>
+                    <div>Answer D: <?php echo htmlspecialchars($question['answer_d']); ?></div>
+                    <div class="font-bold">Correct Answer: <?php echo htmlspecialchars($question['correct_answer']); ?></div>
+                    <a href="edit_question.php?id=<?php echo $question['id']; ?>">Edit</a>
+                    <form action="delete_question.php" method="POST" style="display: inline;">
+                        <input type="hidden" name="question_id" value="<?php echo $question['id']; ?>">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this question?')">Delete</button>
+                    </form>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>No questions found.</p>
+    <?php endif; ?>
+</div>
+
+</body>
+
+</html>
+
