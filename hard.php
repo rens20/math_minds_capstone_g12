@@ -28,7 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Undo the last answer
         $_SESSION['current_question']--;
         unset($_SESSION['user_answers'][$_SESSION['current_question']]);
-        header('Location: medium.php');
+        
+        // Correctly concatenate the URL with the user ID parameter
+        header('Location: easy.php?id=' . urlencode($user['id']));
         exit;
     } else {
         $selected_answer = $_POST['answer'];
@@ -45,10 +47,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Move to the next question
         $_SESSION['current_question']++;
 
-        // Check if the quiz is complete
-        if ($_SESSION['current_question'] >= count($questions)) {
-            header('Location: quiz_result1.php');
-            exit;
+       if ($_SESSION['current_question'] >= count($questions)) {
+    // Correctly concatenate the URL with the user ID parameter
+    header('Location: quiz_result1.php?id=' . urlencode($user['id']));
+    exit;
         }
     }
 }

@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['question_id'])) {
     }
 
     // Perform DELETE operation on 'hard_questions' database
-    $sqlHard = "DELETE FROM hard_questions WHERE id = '$questionId'";
+    $sqlHard = "DELETE FROM medium_questions WHERE id = '$questionId'";
     if ($connHard->query($sqlHard) === TRUE) {
         $_SESSION['success_message'] .= ' Question deleted successfully from Hard Questions.';
     } else {

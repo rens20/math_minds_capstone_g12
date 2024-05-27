@@ -1,9 +1,4 @@
-<?php
 
-require_once __DIR__ . '../config/configuration.php'; 
-require_once __DIR__ . '../config/validation.php';
-
-?>
 
 <!DOCTYPE html>
 <html>
@@ -42,14 +37,19 @@ require_once __DIR__ . '../config/validation.php';
 <body>
 	<div class="container">
 	
-		<?php $userId = 123; $userName = 'JohnDoe'; ?>
-		<div class="box easy" onclick="showLoading('easy.php?id=<?php echo urlencode($userId); ?>&name=<?php echo urlencode($userName); ?>');">
+		<?php
+
+require_once __DIR__ . '../config/configuration.php'; 
+require_once __DIR__ . '../config/validation.php';
+
+?>
+		<div class="box easy" id="easy" onclick="showLoading()" >
 			<div class="label">Easy</div>
 		</div>
-		<div class="box medium" onclick="showLoading('medium.php?id=<?php echo urlencode($userId); ?>&name=<?php echo urlencode($userName); ?>');">
+		<div class="box medium" id="medium" onclick="showLoading()"> 
 			<div class="label">Medium</div>
 		</div>
-		<div class="box hard" onclick="showLoading('hard.php?id=<?php echo urlencode($userId); ?>&name=<?php echo urlencode($userName); ?>');">
+		<div class="box hard" id="hard" onclick="showLoading()">
 			<div class="label">Hard</div>
 		</div>
 	</div>
@@ -62,8 +62,30 @@ require_once __DIR__ . '../config/validation.php';
 			body.classList.add('blur');
 			setTimeout(() => {
 				window.location.href = url;
-			}, 5000); // Wait for 5 seconds before navigating
+			}, 5000);
 		}
+
+		function dontHateThePlaysHateTheGame(name) {
+            const url = window.location.href;
+            const nameRegex = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + nameRegex + '(=([^&#]*)|&|#|$)');
+            const results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        const userId = dontHateThePlaysHateTheGame('id');
+        const userName = dontHateThePlaysHateTheGame('name');
+
+        const levels = ['easy', 'medium', 'hard'];
+
+        levels.forEach(level => {
+            const playBtn = document.getElementById(level);
+            playBtn.addEventListener('click', () => {
+                window.location.href = `${level}.php?id=${encodeURIComponent(userId)}&name=${encodeURIComponent(userName)}`;
+            });
+        });
 	</script>
 </body>
 </html>

@@ -28,7 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Undo the last answer
         $_SESSION['current_question']--;
         unset($_SESSION['user_answers'][$_SESSION['current_question']]);
-        header('Location: easy.php');
+        
+        // Correctly concatenate the URL with the user ID parameter
+        header('Location: easy.php?id=' . urlencode($user['id']));
         exit;
     } else {
         $selected_answer = $_POST['answer'];
@@ -44,10 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Move to the next question
         $_SESSION['current_question']++;
+    
 
-        // Check if the quiz is complete
+
         if ($_SESSION['current_question'] >= count($questions)) {
-            header('Location: quiz_result.php');
+            // Correctly concatenate the URL with the user ID parameter
+            header('Location: quiz_result.php?id=' . urlencode($user['id']));
             exit;
         }
     }
@@ -58,7 +62,6 @@ $current_question = $questions[$_SESSION['current_question']];
 $current_question_number = $_SESSION['current_question'] + 1;
 $total_questions = count($questions);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -225,7 +228,7 @@ $total_questions = count($questions);
             <ul class="options">
                 <?php foreach (['a', 'b', 'c', 'd'] as $option): ?>
                     <li>
-                        <input type="radio" id="answer_<?php echo $option; ?>" name="answer" value="<?php echo strtoupper($option); ?>">
+                        <input type="radio" required id="answer_<?php echo $option; ?>" name="answer" value="<?php echo strtoupper($option); ?>">
                         <label for="answer_<?php echo $option; ?>" data-label="<?php echo strtoupper($option); ?>">
                             <?php echo $current_question['answer_' . $option]; ?>
                         </label>

@@ -211,8 +211,8 @@ $conn->close();
                     <div>Answer C: <?php echo htmlspecialchars($question['answer_c']); ?></div>
                     <div>Answer D: <?php echo htmlspecialchars($question['answer_d']); ?></div>
                     <div class="font-bold">Correct Answer: <?php echo htmlspecialchars($question['correct_answer']); ?></div>
-                    <a href="edit_question.php?id=<?php echo $question['id']; ?>">Edit</a>
-                    <form action="delete_question.php" method="POST" style="display: inline;">
+                    <a href="edit_question2.php?id=<?php echo $question['id']; ?>">Edit</a>
+                    <form action="delete_question2  .php" method="POST" style="display: inline;">
                         <input type="hidden" name="question_id" value="<?php echo $question['id']; ?>">
                         <button type="submit" onclick="return confirm('Are you sure you want to delete this question?')">Delete</button>
                     </form>

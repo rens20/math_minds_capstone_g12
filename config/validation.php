@@ -26,33 +26,39 @@ function ValidateLogin($email, $password) {
     mysqli_close($conn);
 }
 
-
 function Register($email, $name, $last, $password, $username) {
+    // Establish connection
     $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
+    // Escape inputs to prevent SQL injection
     $email = mysqli_real_escape_string($conn, $email);
     $name = mysqli_real_escape_string($conn, $name);
     $last = mysqli_real_escape_string($conn, $last);
     $username = mysqli_real_escape_string($conn, $username);
     $password = mysqli_real_escape_string($conn, $password);
 
-    // Store the plain text password in the database
+    // Insert user into the database
     $insert = "INSERT INTO user_admin (email, last, name, password, username, type) 
                VALUES ('$email', '$last', '$name', '$password', '$username', 'user')";
-    
+
     if (mysqli_query($conn, $insert)) {
-        $report = 'Registration Complete!';
-          header('location: ../gamepage.php');
-    exit();
-    
+        // Get the ID of the newly inserted user
+        $user_id = mysqli_insert_id($conn);
+        $user_name = mysqli_real_escape_string($conn, $name); // Ensure the name is safe for URL encoding
+
+        // Close connection
+        mysqli_close($conn);
+
+        // Redirect to the game page with user ID and name
+        header("Location: ../playbutton.php?id=" . urlencode($user_id) . "&name=" . urlencode($user_name));
+        exit();
     } else {
         $report = 'Error: ' . $insert . '<br>' . mysqli_error($conn);
+        // Close connection
+        mysqli_close($conn);
+        return $report;
     }
-  
-    // Close connection
-    mysqli_close($conn);
-    return $report;
 }

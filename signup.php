@@ -64,24 +64,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
   <script>
 
-const signupBtn = document.getElementById('signup-btn');
+// const signupBtn = document.getElementById('signup-btn');
 
-signupBtn.addEventListener('click', () => {
-  const container = signupBtn.parentNode.parentNode;
-  const formGroups = container.querySelectorAll('.form-group');
-  formGroups.forEach((formGroup) => {
-    if (formGroup.firstElementChild.name === 'email') {
-      formGroup.classList.add('shrink');
-    } else {
-      formGroup.classList.remove('shrink');
-      formGroup.classList.add('grow');
-    }
-  });
-  container.classList.add('shrink');
-  setTimeout(() => {
-    window.location.href ='signup.php'; /* redirect to sign up page */
-  }, 500); /* wait for 500ms for the transition effect */
-});
+// signupBtn.addEventListener('click', () => {
+//   const container = signupBtn.parentNode.parentNode;
+//   const formGroups = container.querySelectorAll('.form-group');
+//   formGroups.forEach((formGroup) => {
+//     if (formGroup.firstElementChild.name === 'email') {
+//       formGroup.classList.add('shrink');
+//     } else {
+//       formGroup.classList.remove('shrink');
+//       formGroup.classList.add('grow');
+//     }
+//   });
+//   container.classList.add('shrink');
+//   setTimeout(() => {
+//     window.location.href ='signup.php'; /* redirect to sign up page */
+//   }, 500); /* wait for 500ms for the transition effect */
+// });
 
 // add event listener to the container to remove the shrink effect when the transition is complete
 document.addEventListener('DOMContentLoaded', () => {
