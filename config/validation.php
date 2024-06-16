@@ -1,33 +1,27 @@
 <?php
-
 function ValidateLogin($email, $password) {
-    $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+    global $conn;
 
-    $email = mysqli_real_escape_string($conn, $email);
-    $password = mysqli_real_escape_string($conn, $password);
-
-    $sql = "SELECT * FROM user_admin WHERE email = '$email'";
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_assoc($result);
-        if ($password === $user['password']) { 
-            return $user; 
-        } else {
-            return null; 
+    $query = "SELECT * FROM user_admin WHERE email = ?";
+    if ($stmt = $conn->prepare($query)) {
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            // Assuming passwords are hashed using password_hash() function
+            if (password_verify($password, $user['password'])) {
+                return $user;
+            }
         }
+        $stmt->close();
     } else {
-        return null; 
+        echo 'Prepare failed: (' . $conn->errno . ') ' . $conn->error;
     }
-
-    mysqli_close($conn);
+    return false;
 }
-
 function Register($email, $name, $last, $password, $username) {
-    // Establish connection
+    // Establish database connection using constants
     $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
@@ -40,9 +34,12 @@ function Register($email, $name, $last, $password, $username) {
     $username = mysqli_real_escape_string($conn, $username);
     $password = mysqli_real_escape_string($conn, $password);
 
-    // Insert user into the database
+    // Hash the password before insertion
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert user into the database with hashed password
     $insert = "INSERT INTO user_admin (email, last, name, password, username, type) 
-               VALUES ('$email', '$last', '$name', '$password', '$username', 'user')";
+               VALUES ('$email', '$last', '$name', '$hashed_password', '$username', 'user')";
 
     if (mysqli_query($conn, $insert)) {
         // Get the ID of the newly inserted user
@@ -53,7 +50,7 @@ function Register($email, $name, $last, $password, $username) {
         mysqli_close($conn);
 
         // Redirect to the game page with user ID and name
-        header("Location: ../playbutton.php?id=" . urlencode($user_id) . "&name=" . urlencode($user_name));
+        header("Location: ../signin.php?id=" . urlencode($user_id) . "&name=" . urlencode($user_name));
         exit();
     } else {
         $report = 'Error: ' . $insert . '<br>' . mysqli_error($conn);
@@ -62,3 +59,4 @@ function Register($email, $name, $last, $password, $username) {
         return $report;
     }
 }
+?>

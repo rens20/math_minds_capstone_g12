@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2024 at 02:45 PM
+-- Generation Time: Jun 13, 2024 at 11:53 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -34,24 +34,30 @@ CREATE TABLE `easy_questions` (
   `answer_b` varchar(200) NOT NULL,
   `answer_c` varchar(255) NOT NULL,
   `answer_d` varchar(250) NOT NULL,
-  `question` varchar(200) NOT NULL
+  `question` varchar(200) NOT NULL,
+  `image_path` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `easy_questions`
 --
 
-INSERT INTO `easy_questions` (`id`, `answer_a`, `correct_answer`, `answer_b`, `answer_c`, `answer_d`, `question`) VALUES
-(1, '0000-00-00', 'A', 'asdgas', 'asgg', 'sgagas', 'dsggdsgsd'),
-(3, '0000-00-00', 'A', 'asdgas', 'asgg', 'sgagas', 'dsggdsgsd'),
-(4, '0000-00-00', 'B', 'dsgds', 'dgds', 'dgsgds', 'dsggdsgsd'),
-(5, 'sfsaf', 'B', 'safsa', 'fsafsa', 'fsafas', 'safsaf'),
-(6, 'fsafsa', 'B', 'safsaf', 'fsafsa', 'fsafsafsa', 'sfasfsa'),
-(7, 'gdsgdsg', 'A', 'dsgdsg', 'dsgdsg', 'gdds', 'gdsgsd'),
-(8, 'gdsgdsgds', 'B', 'gdsgdsg', 'dsgdsg', 'dsgdsg', 'dgdsg'),
-(9, 'gdsgdsg', 'A', 'dgdsgdsg', 'gdsgds', 'gdsgdsgdg', 'dsgdsg'),
-(10, 'gdsgsdg', 'A', 'dsgdsgds', 'gdsgdsg', 'dsgdsgds', 'dsgdsgdsdd'),
-(12, 'safsa', 'B', 'safsa', 'a', 'fs', 'fasfss');
+INSERT INTO `easy_questions` (`id`, `answer_a`, `correct_answer`, `answer_b`, `answer_c`, `answer_d`, `question`, `image_path`) VALUES
+(1, 'gdsgdsg', 'C', 'dsgds', 'fsafsa', 'gdds', 'dsggdsgsd', 'images/437066069_1827738024377329_4160714669465111478_n.jpg'),
+(4, '0000-00-00', 'B', 'dsgds', 'dgds', 'dgsgds', 'dsggdsgsd', ''),
+(5, 'sfsaf', 'B', 'safsa', 'fsafsa', 'fsafas', 'safsaf', ''),
+(6, 'fsafsa', 'B', 'safsaf', 'fsafsa', 'fsafsafsa', 'sfasfsa', ''),
+(7, 'gdsgdsg', 'A', 'dsgdsg', 'dsgdsg', 'gdds', 'gdsgsd', ''),
+(8, 'gdsgdsgds', 'B', 'gdsgdsg', 'dsgdsg', 'dsgdsg', 'dgdsg', ''),
+(9, 'gdsgdsg', 'A', 'dgdsgdsg', 'gdsgds', 'gdsgdsgdg', 'dsgdsg', ''),
+(10, 'gdsgsdg', 'A', 'dsgdsgds', 'gdsgdsg', 'dsgdsgds', 'dsgdsgdsdd', ''),
+(12, 'safsa', 'B', 'safsa', 'a', 'fs', 'fasfss', ''),
+(13, 'gdsgdsg', 'B', 'safas', 'dgds', 'gdds', 'dsggdsgsd', ''),
+(14, 'gdsgdsg', 'C', 'dsgds', 'fsafsa', 'gdds', 'dsggdsgsd', 'images/437066069_1827738024377329_4160714669465111478_n.jpg'),
+(16, 'safsa', 'A', 'safas', 'fsafsa', 'dd', 'safsaf', ''),
+(17, 'dsgds', 'A', '', 'asgg', 'dd', 'gdsgsd', ''),
+(18, 'dsgds', 'A', '', 'asgg', 'dd', 'gdsgsd', 'image/1.png'),
+(19, 'dsgds', 'A', '', 'asgg', 'dd', 'gdsgsd', 'image/1.png');
 
 -- --------------------------------------------------------
 
@@ -66,7 +72,8 @@ CREATE TABLE `hard_questions` (
   `answer_b` varchar(259) NOT NULL,
   `answer_c` varchar(250) NOT NULL,
   `answer_d` varchar(250) NOT NULL,
-  `correct_answer` text NOT NULL
+  `correct_answer` text NOT NULL,
+  `image_path` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -82,15 +89,30 @@ CREATE TABLE `medium_questions` (
   `answer_b` varchar(259) NOT NULL,
   `answer_c` varchar(250) NOT NULL,
   `answer_d` varchar(250) NOT NULL,
-  `correct_answer` varchar(250) NOT NULL
+  `correct_answer` varchar(250) NOT NULL,
+  `image_path` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `medium_questions`
 --
 
-INSERT INTO `medium_questions` (`id`, `question`, `answer_a`, `answer_b`, `answer_c`, `answer_d`, `correct_answer`) VALUES
-(1, 0, 'safsa', 'safsa', 'fas', 'gdds', 'D');
+INSERT INTO `medium_questions` (`id`, `question`, `answer_a`, `answer_b`, `answer_c`, `answer_d`, `correct_answer`, `image_path`) VALUES
+(1, 0, 'safsa', 'safsa', 'fas', 'gdds', 'D', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset`
+--
+
+CREATE TABLE `password_reset` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token` varchar(250) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `expires_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -147,7 +169,17 @@ INSERT INTO `user_admin` (`id`, `name`, `last`, `email`, `password`, `username`,
 (12, 'sqq', 'rens', 'anajane1127@gmail.com', 'fwfwq', 'admin', 'user'),
 (13, 'ggg', 'rens', 'dsgdsg@gmail.com', 'fwfwq', 'admin', 'user'),
 (14, 'dgd', 'rens', 'dsgdsg@gmail.com', 'fwfwq', 'admin', 'user'),
-(15, 'sss', 'rens', 'anajane1127@gmail.com', 'ggg', 'admin', 'user');
+(15, 'sss', 'rens', 'anajane1127@gmail.com', 'ggg', 'admin', 'user'),
+(16, '123', 'wasie', 'anajane1127@gmail.com', 'fwfwq', 'mamamo', 'user'),
+(17, '123', 'wasie', 'wasie@gmail.com', 'fwfwq', 'wasieacuna@gmail.com', 'user'),
+(18, '555', 'wasie', 'wasie@gmail.com', 'fwfwq', 'admin', 'user'),
+(19, 'wasie@gmail.com', 'rens', 'wasie@gmail.com', 'acuna', 'rensss', 'user'),
+(20, 'wasie@gmail.com', 'wasie', 'wasie', 'acuna', 'admin', 'user'),
+(21, 'wasie@gmail.com', 'wasie', '333', 'ggg', 'admin', 'user'),
+(22, 'wasie@gmail.com', 'wasie', 'tite', 'fwfwq', 'admin', 'user'),
+(23, 'wasie', 'fwfwq', 'wasie@gmail.com', '$2y$10$REVszbM8Hbxt/r.CqR5.4.4F4MrNzCNBCLyYuDD9TvSCX9nMdD7MK', 'admin', 'user'),
+(24, 'wasie', 'acuna', 'wasie@gmail.com', '777', 'mamamo', 'user'),
+(25, 'fgdgd', 'fwfwq', 'wasieacuna@gmail.com', '555', 'vdvdvvdv', 'user');
 
 --
 -- Indexes for dumped tables
@@ -163,6 +195,12 @@ ALTER TABLE `easy_questions`
 -- Indexes for table `medium_questions`
 --
 ALTER TABLE `medium_questions`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `password_reset`
+--
+ALTER TABLE `password_reset`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -185,13 +223,19 @@ ALTER TABLE `user_admin`
 -- AUTO_INCREMENT for table `easy_questions`
 --
 ALTER TABLE `easy_questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `medium_questions`
 --
 ALTER TABLE `medium_questions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `password_reset`
+--
+ALTER TABLE `password_reset`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `quiz_scores`
@@ -203,7 +247,7 @@ ALTER TABLE `quiz_scores`
 -- AUTO_INCREMENT for table `user_admin`
 --
 ALTER TABLE `user_admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

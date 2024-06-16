@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+$user_id = $_GET['id'];
 // Check if the quiz is complete
 if (!isset($_SESSION['current_question']) || $_SESSION['current_question'] < 10) {
-    header('Location: hard.php');
+    header('Location: hard.php?id=' . urlencode($user['id']));
     exit;
 }
+
 
 // Get the total correct answers
 $total_correct = $_SESSION['correct_answers'];
@@ -126,7 +128,7 @@ session_destroy();
         <div class="p-4">
             <h1 class="text-2xl font-semibold violet-theme">Quiz Results</h1>
             <p class="mt-4 text-lg">You answered <span class="font-bold"><?php echo $total_correct; ?></span> out of 10 questions correctly.</p>
-            <a href="easy.php" class="block mt-4 text-center bg-violet-500 hover:bg-violet-600 text-black font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">
+            <a href="hard.php" class="block mt-4 text-center bg-violet-500 hover:bg-violet-600 text-black font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">
                 Try Again
             </a>
             <button id="view-answers-button"  class="block mt-4 text-center   hover:bg-violet-600 text-white font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">

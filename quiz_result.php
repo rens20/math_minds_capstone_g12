@@ -36,6 +36,57 @@ session_destroy();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Results</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+   
+</head>
+
+<body class="py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden fade-in">
+        <div class="p-4">
+            <h1 class="text-2xl font-semibold violet-theme">Quiz Results</h1>
+            <p class="mt-4 text-lg">You answered <span class="font-bold"><?php echo $total_correct; ?></span> out of 10 questions correctly.</p>
+       <a href="easy.php?id=<?php echo urlencode($user['id']); ?>&difficulty=<?php echo $_GET['difficulty']; ?>" class="block mt-4 text-center bg-violet-500 hover:bg-violet-600 text-black font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">
+    Try Again
+</a>
+
+            <button id="view-answers-button"  class="block mt-4 text-center   hover:bg-violet-600 text-white font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">
+                View Answers
+            </button>
+        </div>
+    </div>
+
+    <div id="answers-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Correct and Wrong Answers</div>
+            <div class="modal-body">
+                <ul>
+                    <?php foreach ($questions as $index => $question): ?>
+                        <li class="mb-2">
+                            <strong>Q<?php echo $index + 1; ?>: <?php echo $question['question']; ?></strong><br>
+                            <span>Your answer: <?php echo isset($user_answers[$index]) ? $user_answers[$index] : 'No answer'; ?></span><br>
+                            <span>Correct answer: <?php echo $question['correct_answer']; ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="close-button" id="close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('view-answers-button').addEventListener('click', function() {
+            document.getElementById('answers-modal').style.display = 'flex';
+        });
+
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('answers-modal').style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
+
     <style>
         /* Custom styles */
         body {
@@ -119,52 +170,3 @@ session_destroy();
         color: #f3f4f6;
        }
     </style>
-</head>
-
-<body class="py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden fade-in">
-        <div class="p-4">
-            <h1 class="text-2xl font-semibold violet-theme">Quiz Results</h1>
-            <p class="mt-4 text-lg">You answered <span class="font-bold"><?php echo $total_correct; ?></span> out of 10 questions correctly.</p>
-            <a href="easy.php?id=' . urlencode($user['id']))" class="block mt-4 text-center bg-violet-500 hover:bg-violet-600 text-black font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">
-                Try Again
-            </a>
-            <button id="view-answers-button"  class="block mt-4 text-center   hover:bg-violet-600 text-white font-semibold py-2 px-4 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-opacity-50">
-                View Answers
-            </button>
-        </div>
-    </div>
-
-    <div id="answers-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">Correct and Wrong Answers</div>
-            <div class="modal-body">
-                <ul>
-                    <?php foreach ($questions as $index => $question): ?>
-                        <li class="mb-2">
-                            <strong>Q<?php echo $index + 1; ?>: <?php echo $question['question']; ?></strong><br>
-                            <span>Your answer: <?php echo isset($user_answers[$index]) ? $user_answers[$index] : 'No answer'; ?></span><br>
-                            <span>Correct answer: <?php echo $question['correct_answer']; ?></span>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button class="close-button" id="close-modal">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.getElementById('view-answers-button').addEventListener('click', function() {
-            document.getElementById('answers-modal').style.display = 'flex';
-        });
-
-        document.getElementById('close-modal').addEventListener('click', function() {
-            document.getElementById('answers-modal').style.display = 'none';
-        });
-    </script>
-</body>
-
-</html>
-

@@ -12,7 +12,7 @@ if (!isset($_SESSION['current_question'])) {
 }
 
 // Retrieve questions from the database
-$sql = "SELECT id, question, answer_a, answer_b, answer_c, answer_d, correct_answer FROM hard_questions LIMIT 10";
+$sql = "SELECT id, question, answer_a, answer_b, answer_c, answer_d, correct_answer, image_path FROM hard_questions LIMIT 10";
 $result = $conn->query($sql);
 
 $questions = [];
@@ -22,6 +22,10 @@ if ($result->num_rows > 0) {
     }
 }
 
+if (empty($questions)) {
+    die('No questions available. Please contact the administrator.');
+}
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['undo'])) {
@@ -29,10 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['current_question']--;
         unset($_SESSION['user_answers'][$_SESSION['current_question']]);
         
-        // Correctly concatenate the URL with the user ID parameter
-        header('Location: easy.php?id=' . urlencode($user['id']));
+        header('Location: hard.php?id=' . urlencode($_SESSION['user_id']));
         exit;
-    } else {
+    } elseif (isset($_POST['answer'])) {
         $selected_answer = $_POST['answer'];
         $current_question_index = $_SESSION['current_question'];
 
@@ -46,29 +49,103 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Move to the next question
         $_SESSION['current_question']++;
-
-       if ($_SESSION['current_question'] >= count($questions)) {
-    // Correctly concatenate the URL with the user ID parameter
-    header('Location: quiz_result1.php?id=' . urlencode($user['id']));
-    exit;
+    
+        if ($_SESSION['current_question'] >= count($questions)) {
+            header('Location: quiz_result3.php?id=' . urlencode($_SESSION['user_id']));
+            exit;
         }
+    } else {
+        // No answer selected, redirect back to the quiz page
+        header('Location: hard.php?id=' . urlencode($_SESSION['user_id']));
+        exit;
     }
 }
 
-// Get the current question
-$current_question = $questions[$_SESSION['current_question']];
-$current_question_number = $_SESSION['current_question'] + 1;
+// Ensure current question index is within the bounds of the available questions
+$current_question_index = $_SESSION['current_question'];
+if ($current_question_index >= count($questions)) {
+    $current_question_index = count($questions) - 1;
+}
+$current_question = $questions[$current_question_index];
+$current_question_number = $current_question_index + 1;
 $total_questions = count($questions);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
-    <style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", function(event) {
+                const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+                if (!selectedAnswer) {
+                    alert('Please select an answer before proceeding.');
+                    event.preventDefault(); // Prevent form submission
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Quiz Question
+          <button class="button" id="help-button" onclick="showHelp()">Help</button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" style="width: <?php echo ($current_question_number / $total_questions) * 100; ?>%;"></div>
+        </div>
+        <form action="" method="POST" onsubmit="return validateAnswer();">
+            <div class="question"><?php echo htmlspecialchars($current_question['question']); ?></div>
+            <?php if (!empty($current_question['image_path'])): ?>
+                <div><img src="<?php echo htmlspecialchars($current_question['image_path']); ?>" alt="Question Image" style="max-width: 80%; height: auto;"></div>
+            <?php endif; ?>
+            <ul class="options">
+                <?php foreach (['a', 'b', 'c', 'd'] as $option): ?>
+                    <li>
+                        <input type="radio" required id="answer_<?php echo $option; ?>" name="answer" value="<?php echo strtoupper($option); ?>">
+                        <label for="answer_<?php echo $option; ?>" data-label="<?php echo strtoupper($option); ?>">
+                            <?php echo htmlspecialchars($current_question['answer_' . $option]); ?>
+                        </label>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <div class="buttons">
+                <?php if ($current_question_number > 1): ?>
+                    <button type="submit" name="undo" class="button">Undo</button>
+                <?php else: ?>
+                    <div></div>
+                <?php endif; ?>
+                <button type="submit" class="button">Next</button>
+            </div>
+        </form>
+        <div class="container">
+            <!-- Background Music -->
+            <audio id="background-music" autoplay loop>
+                <source src="./409058515_25809778508620935_5250915706650752386_n.mp4" type="audio/mpeg" hidden>
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        function showHelp() {
+            // Get the correct answer option and select it
+            const correctAnswer = document.querySelector('input[value="<?php echo strtoupper($current_question['correct_answer']); ?>"]');
+            if (correctAnswer) {
+                correctAnswer.checked = true;
+            } else {
+                alert('Correct answer not found.');
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+ <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f3f4f6;
@@ -211,52 +288,3 @@ $total_questions = count($questions);
             }
         }
     </style>
-</head>
-
-<body>
-    <div class="container">
-        <div class="header">
-            Quiz Question
-            <button class="button" id="help-button">Help</button>
-        </div>
-        <div class="progress-container">
-            <div class="progress-bar" style="width: <?php echo ($current_question_number / $total_questions) * 100; ?>%;"></div>
-        </div>
-        <form action="" method="POST">
-            <div class="question"><?php echo $current_question['question']; ?></div>
-            <ul class="options">
-                <?php foreach (['a', 'b', 'c', 'd'] as $option): ?>
-                    <li>
-                        <input type="radio" id="answer_<?php echo $option; ?>" name="answer" value="<?php echo strtoupper($option); ?>">
-                        <label for="answer_<?php echo $option; ?>" data-label="<?php echo strtoupper($option); ?>">
-                            <?php echo $current_question['answer_' . $option]; ?>
-                        </label>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-            <div class="buttons">
-                <?php if ($current_question_number > 1): ?>
-                    <button type="submit" name="undo" class="button">Undo</button>
-                <?php else: ?>
-                    <div></div>
-                <?php endif; ?>
-                <button type="submit" class="button">Next</button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        document.getElementById('help-button').addEventListener('click', function() {
-            const  correctAnswer = "<?php echo $current_question['correct_answer']; ?>";
-            const options = document.querySelectorAll('.options label');
-
-            options.forEach(function(option) {
-                if (option.getAttribute('for').endsWith(correctAnswer.toLowerCase())) {
-                    option.classList.add('correct');
-                }
-            });
-        });
-    </script>
-</body>
-
-</html>

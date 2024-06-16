@@ -11,7 +11,7 @@ if (!isset($_GET['id'])) {
 $id = $_GET['id'];
 
 // Fetch the question details from the database
-$sql = "SELECT * FROM easy_questions WHERE id = $id";
+$sql = "SELECT * FROM hard_questions WHERE id = $id";
 $result = $conn->query($sql);
 
 if ($result->num_rows == 1) {
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($conn->query($sql) === TRUE) {
         // Redirect back to admin_easy.php after successful update
-        header('Location: admin_easy.php');
+        header('Location: admin_hard.php');
         exit;
     } else {
         echo '<div class="notification error">Error updating question: ' . $conn->error . '</div>';
